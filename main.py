@@ -3,7 +3,7 @@
 # This file is derivied from the Tornado tutorial 
 # https://github.com/tornadoweb/tornado/tree/stable/demos/blog and has
 # been modified by Yang D.Y. <minvacai@sina.com> for: 
-# 1. TextListHandler / AboutHandler/ RawTextHandler/ WordSegHandler and 
+# TextListHandler / AboutHandler/ RawTextHandler/ WordSegHandler and
 # relative parts such as template files.
 #
 
