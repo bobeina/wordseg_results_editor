@@ -1,6 +1,5 @@
 # coding=utf8
 
-
 import re
 import numpy as np
 import pandas as pd
@@ -13,8 +12,7 @@ from keras.models import Model
 
 class WordSeq():
     """
-    这个分词程序根据苏剑林的算法修改而来；训练部分太乱，目前暂时懒得重构，就先不放上来了……
-    需要两个文件：一个训练好的权值，一个已处理过的字的列表；
+    使用这个类需要两个配置文件：一个训练好的权值，一个已处理过的字的列表；
     另外要实际应用的话，其实还有一些问题有待改进。 - by minvacai@sina.com 2017/5/22
     """
     def __init__(self, old_chars_list_file, weight_file):
@@ -89,8 +87,7 @@ class WordSeq():
 
     def set_transfer_prob(self):
         """
-        转移概率，原作者单纯用了等概率
-        我统计了一下原语料中的实际概率 - by minvacai@sina.com
+        转移概率
         :return:
         """
         zy = {'be': 0.25670099613597036,
@@ -121,7 +118,6 @@ class WordSeq():
 
     def simple_cut(self, s):
         """
-
         :param s:
         :return:
         """

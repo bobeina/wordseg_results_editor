@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 #
+# This file is derivied from the Tornado tutorial 
+# https://github.com/tornadoweb/tornado/tree/stable/demos/blog and has
+# been modified by Yang D.Y. <minvacai@sina.com> for: 
+# 1. TextListHandler / AboutHandler/ RawTextHandler/ WordSegHandler and 
+# relative parts such as template files.
+#
+
+
+#
 # Copyright 2009 Facebook
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -16,13 +25,10 @@
 
 import bcrypt
 import concurrent.futures
-# import MySQLdb
 import pymongo
 import markdown
 import os.path
 import re
-# import subprocess
-# import torndb
 import tornado.escape
 from tornado import gen
 import tornado.httpserver
@@ -65,8 +71,8 @@ class Application(tornado.web.Application):
             (r"/auth/create", AuthCreateHandler),
             (r"/auth/login", AuthLoginHandler),
             (r"/auth/logout", AuthLogoutHandler),
-            (r"/about", AboutHandler),
 
+            (r"/about", AboutHandler),
             (r"/texts", TextListHandler),
             (r"/raw/([^/]+)", RawTextHandler),
             (r"/ws/([^/]+)", WordSegHandler),
@@ -111,9 +117,6 @@ class HomeHandler(BaseHandler):
         cursor = self.db.entries.find().limit(5)
         for entry in cursor:
             entries.append(entry)
-        # if len(entries)<1:
-        #     self.redirect("/compose")
-        #     return
         self.render("home.html", entries=entries)
 
 
@@ -152,14 +155,12 @@ class ComposeHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        # user_name = self.get_argument("name", None)
         id = self.get_argument("_id", None)
         title = self.get_argument("title")
         text = self.get_argument("markdown")
         html = markdown.markdown(text)
         # if user_name:
         if id:
-            # entry = self.db.get("SELECT * FROM entries WHERE id = %s", int(id))
             entry = self.db.entries.find_one({"_id": ObjectId(id)})
             if not entry: raise tornado.web.HTTPError(404)
             slug = entry["slug"]
