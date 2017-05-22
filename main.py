@@ -43,15 +43,8 @@ import json
 
 import sys
 sys.path.append('./')
-from rnn_predict import WordSeq
 
 define("port", default=9999, help="run on the given port", type=int)
-
-max_text = 2097152
-wordseq = WordSeq(
-    './weight/cs_20170503_002900.csv',
-    './weight/20170503_002850.h5'
-)
 
 # A thread pool to be used for password hashing with bcrypt.
 executor = concurrent.futures.ThreadPoolExecutor(2)
@@ -395,7 +388,6 @@ class WordSegHandler(BaseHandler):
                     "cut": 1
                 }
             )
-            print("=============>", text)
 
             text["_id"] = str(text["_id"])
         else:
