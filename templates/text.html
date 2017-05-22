@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <form action="{{ request.path }}" method="post" class="raw_text">
+    <div  class="col-md-3"><input name="batch" class="form-control" type="text" value='{{ text["batch"] if text else "" }}' placeholder="批次号"/></div>
+      <div  class="col-md-3"><input name="author" class="form-control" type="text" value='{{ text["info"]["author"] if text else "" }}' placeholder="原始作者"/></div>
+      <div  class="col-md-3"><input name="field" class="form-control" type="text" value='{{ ",".join(text["info"]["field"]) if text else "" }}' placeholder="领域，逗号隔开"/></div>
+      <div  class="col-md-3"><input name="time" class="form-control" type="text" value='{{ text["info"]["time"] if text else "" }}' placeholder="原始发布时间"/></div>
+      <div  class="col-md-12"><input name="source" class="form-control" type="text" value='{{ text["info"]["source"] if text else "" }}' placeholder="来源"/></div>
+      <div  class="col-md-12"><input name="url" class="form-control" type="text" value='{{ text["info"]["url"] if text else "" }}' placeholder="来源网址"/></div>
+    <div  class="col-md-12"><textarea name="raw" class="form-control" rows=20 placeholder="原始文本" onpropertychange="if(value.length>20000) value=value.substr(0,20000)">{{ text["raw"] if text else "" }}</textarea></div>
+    <div>
+      <input type="submit" value='{{ _("Save changes") if text else _("Commit raw text") }}' class="btn btn-default" />
+      &nbsp;<a href='/texts'>{{ _("Cancel") }}</a>
+      &nbsp;<a href='/ws/{{ text["_id"] }}'>{{ _("查看分词结果") }}</a>
+    </div>
+    {% if text %}
+      <input type="hidden" name="_id" value='{{ text["_id"] }}' class="form-control" />
+    {% end %}
+    {% module xsrf_form_html() %}
+  </form>
+</div>
+{% end %}
+
+
+{% block bottom %}
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  //<![CDATA[
+
+    $(function() {
+      $("input[name=title]").select();
+      $("form.raw_text").submit(function() {
+          var required = ["batch", "raw", "author", "source", "field", "time"];
+          var form = $(this).get(0);
+          for (var i = 0; i < required.length; i++) {
+              if (!form[required[i]].value) {
+                  $(form[required[i]]).select();
+                  return false;
+              }
+          }
+          return true;
+      });
+    });
+
+  //]]>
+  </script>
+{% end %}

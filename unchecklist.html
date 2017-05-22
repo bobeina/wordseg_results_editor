@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="raws">
+        <div class="raws">
+            <div class="col-md-2"><label>批号</label></div>
+            <div class="col-md-2"><label>领域</label></div>
+            <div class="col-md-1"><label>状态</label></div>
+            <div class="col-md-2"><label>来源</label></div>
+            <div class="col-md-4"><label>摘要</label></div>
+            <div class="col-md-1"><label>入库人</label></div>
+        </div>
+        {% for item in raws %}
+            <div class="raws">
+                <div class="col-md-2"><label>{{ item["batch"] if item else "" }}</label></div>
+                <div class="col-md-2"><label>{{ "/".join(item["info"]["field"]) if item else "" }}</label></div>
+                <div class="col-md-1"><label>{{ item["status"] if item else "" }}</label></div>
+                <div class="col-md-2"><label>{{ item["info"]["source"] if item else "" }}</label></div>
+                <div class="col-md-4"><label><a href='/raw?id={{ item["_id"] }}'>{{ item["summary"] if item else "" }}</a></label></div>
+                <div class="col-md-1"><label>{{ item["creator"]["name"] if item else "" }}</label></div>
+            </div>
+        {% end %}
+    </div>
+
+  <script type="text/javascript">
+  //<![CDATA[
+
+    $(function() {
+      $("input[name=title]").select();
+      $("form.raw_text").submit(function() {
+          var required = ["batch", "raw", "author", "source", "field", "time"];
+          var form = $(this).get(0);
+          for (var i = 0; i < required.length; i++) {
+              if (!form[required[i]].value) {
+                  $(form[required[i]]).select();
+                  return false;
+              }
+          }
+          return true;
+      });
+    });
+
+  //]]>
+  </script>
+{% end %}

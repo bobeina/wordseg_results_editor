@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1>{{ texts["title"] if texts else "" }}</h1>
+    {% for paragraph in texts["content"]%}
+        <p>{{ paragraph if texts else "" }}</p>
+    {% end %}
+    <p align="right">{{ texts["author"] if texts else "" }}</p>
+    <p align="right">{{ texts["date"] if texts else "" }}</p>
+</div>
+{% end %}

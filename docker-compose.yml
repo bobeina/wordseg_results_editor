@@ -1,0 +1,15 @@
+mysql:
+  image: mongodb:3.4
+  environment:
+    MONGODB_ROOT_PASSWORD: its_a_secret_to_everybody
+    MONGODB_USER: rand_user
+    MYSQL_PASSWORD: yourandpass
+    MYSQL_DATABASE: rawtext
+  ports:
+    - "27017"
+main:
+  build: .
+  links:
+    - mongodb
+  ports:
+    - "9999:9999"
