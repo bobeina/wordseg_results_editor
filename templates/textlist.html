@@ -16,7 +16,7 @@
                 <tr>
                     <td><label>{{ item["batch"] if item else "" }}</label></td>
                     <td><label>{{ "/".join(item["info"]["field"]) if item else "" }}</label></td>
-                    <td><label>{{ item["status"] if item else "" }}</label></td>
+                    <td class='{{ "text-success" if item["status"]=="已校对" else "text-warning" }}' ><label>{{  item["status"] if item else "" }}</label></td>
                     <td><label>{{ item["info"]["source"] if item else "" }}</label></td>
                     <td><label><a href='/raw/{{ item["_id"] }}' title="编辑原文">{{ item["summary"] if item else "" }}</a></label></td>
                     <td><label><a href='/ws/{{ item["_id"] }}'>校对</a></label></td>
@@ -28,18 +28,16 @@
 
 <nav aria-label="Page navigation">
   <ul class="pagination">
+    {% if page>0 %}
     <li>
-      <a href="#" aria-label="Previous">
+      <a href="/texts?page={{ page-1 }}" aria-label="Previous">
         <span aria-hidden="true">&laquo;</span>
       </a>
     </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
+    {% end %}
+    <li><a>{{ page }}</a></li>
     <li>
-      <a href="#" aria-label="Next">
+      <a href="/texts?page={{ page + 1 }}" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
       </a>
     </li>

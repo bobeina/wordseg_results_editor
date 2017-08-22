@@ -48,6 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">首页</a>
         </div>
@@ -55,6 +56,7 @@
           <ul class="nav navbar-nav">
             {% if current_user %}
                 <li><a href="/texts">语料列表</a></li>
+                <li><a href="/export">训练数据生成</a></li>
                 <li><a href="/compose">讨论</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/auth/logout?next={{ url_escape(request.uri) }}">{{ _("退出") }}</a></li>

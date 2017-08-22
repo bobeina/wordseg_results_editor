@@ -11,78 +11,78 @@
 {% end %}
 
 {% block content %}
-    <h1>分词结果：</h1>
-        <div class="row">
-            <div class="col-md-6">
-                <div>
-                    <form action="{{ request.path }}" method="post" class="raw_text">
-                        <input type="hidden" name="data" value="" id="datafield" />
-                        <!--<button type="button" onclick="submitWordList('{{ request.path }}', '{{ id if id else '' }}' );" class="btn btn-default">保存修改结果到服务器</button>-->
-                        <input type="submit" value='保存修改结果到服务器' class="btn btn-default" />
-                        {% module xsrf_form_html() %}
-                    </form>
+        <div id="floatTools">
+            <h1>分词结果：</h1>
+            <div>
+                <form action="{{ request.path }}" method="post" class="raw_text">
+                    <div class="row">
+                        <div class="col-md-6"><input type="submit" value='保存修改结果到服务器' class="btn btn-default" /></div>
+                        <div class="col-md-3"><input type="hidden" name="data" value="" id="datafield" /></div>
+                        <div class="col-md-3"><input type="checkbox" name="proofreaded_ok">校对完成</div>
+                    </div>
+                    {% module xsrf_form_html() %}
+                </form>
+            </div>
+            <div class="row">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="radio_new" value="new" onclick="cleanAll()">插入新词
+                    </label>
                 </div>
-                <div class="row">
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="radio_new" value="new" onclick="cleanAll()">插入新词
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="radio_del" value="del" onclick="cleanAll()">删除已有词
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="radio_combine" value="combine" onclick="cleanAll()">合并已有词
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="radio_modify" value="modify" checked onclick="cleanAll()">更改已有词
-                        </label>
-                    </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="radio_del" value="del" onclick="cleanAll()">删除已有词
+                    </label>
                 </div>
-                <div class="panel-body">
-                    <div class="col-md-3"><input type="text" class="form-control" id="word_id" placeholder="位置"></div>
-                    <div class="col-md-6"><input type="text" class="form-control" id="word_text" placeholder="词"></div>
-                    <div class="col-md-3"><button type="button" onclick="changeWordList();" class="btn btn-default">更改</button></div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="radio_combine" value="combine" onclick="cleanAll()">合并已有词
+                    </label>
                 </div>
-                <div class="row">
-                    <div class="panel panel-default">
-                        <div class="panel-title">
-                            <div class="col-md-8">合并多项为一个词，并保存在原第一个词处</div>
-                            <div class="col-md-2"><button type="button" onclick="changeWordList();" class="btn btn-default">合并</button></div>
-                            <div class="col-md-2"><button type="button" onclick="clearLst();" class="btn btn-default">清除</button></div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="col-md-8">
-                                <table class="table table-striped" id="combine_lst"></table>
-                            </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="optionsRadios" id="radio_modify" value="modify" checked onclick="cleanAll()">更改已有词
+                    </label>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-3"><input type="text" class="form-control" id="word_id" placeholder="位置"></div>
+                <div class="col-md-6"><input type="text" class="form-control" id="word_text" placeholder="词"></div>
+                <div class="col-md-3"><button type="button" onclick="changeWordList();" class="btn btn-default">确定</button></div>
+            </div>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-title">
+                        <div class="col-md-8">合并多项为一个词，并保存在原第一个词处</div>
+                        <div class="col-md-2"><button type="button" onclick="changeWordList();" class="btn btn-default">合并</button></div>
+                        <div class="col-md-2"><button type="button" onclick="clearLst();" class="btn btn-default">清除</button></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-8">
+                            <table class="table table-striped" id="combine_lst"></table>
                         </div>
                     </div>
                 </div>
             </div>
+            <div>
+                <h3>使用简要说明</h3>
+                <ul>
+                    <li>当“合并”功能被选中且合并列表中已经有词被添加时，点击文本会自动将合并列表中的最后一个词的后续词加到列表中；</li>
+                    <li>慎用“删除”功能，尤其是拆分一个被误分的长词时，如有必要请尽量在待拆分文本前后添加冗余文本后再作修改。</li>
+                    <li>误删改也不要紧，刷新页面即可重置。</li>
+                    <li>当选中文本中出现形如“<label>&lt;br info="换行"/&gt;</label>”的字符串时，请将其视为一个字符，作用是换行。</li>
+                </ul>
+            </div>
+    </div>
+
+        <div id="textPanel">
             <div><button type="button" onclick="debugShowList();" class="btn btn-primary">调试：显示当前分词结果</button></div>
             <div id="words_containor" class="col-md-6">
                 {% for index,item in enumerate(result) %}<span class="word" title="{{index}}" onclick="pickWord('{{index}}', '{{item}}');">{{item}}</span>{% end %}
             </div>
         </div>
-        <div id="raw">
-            <div><label>原文（此处不显示换行）：</label></div>
-            <div><span>{{ raw if raw else "" }}</span></div>
-        </div>
-        <div id="debug_box"></div>
+        <div id="debug_box_"></div>
         <div id="error_box">{{ "失败！" + error if error else '' }}</div>
-        <div id="readme">
-            <h3>使用简要说明</h3>
-            <ul>
-                <li>当“合并”功能被选中且合并列表中已经有词被添加时，点击文本会自动将合并列表中的最后一个词的后续词加到列表中；</li>
-                <li>慎用“删除”功能，尤其是拆分一个被误分的长词时，如有必要请尽量在待拆分文本前后添加冗余文本后再作修改。</li>
-                <li>误删改也不要紧，刷新页面即可重置。</li>
-            </ul>
-        </div>
     <script>
         changeStyle();
         var words = getWordsFromPage();

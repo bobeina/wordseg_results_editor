@@ -1,3 +1,15 @@
 .word{
-    font-size: 20px
+    font-size: 24px
+}
+
+#floatTools{
+    position: fixed;
+    width: 30%
+}
+
+#textPanel{
+  position:absolute;
+  left:50%;
+  top: 100px;
+  width: 100%
 }

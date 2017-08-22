@@ -69,6 +69,7 @@ class Application(tornado.web.Application):
             (r"/texts", TextListHandler),
             (r"/raw/([^/]+)", RawTextHandler),
             (r"/ws/([^/]+)", WordSegHandler),
+            (r"/export", ExportHandler),
         ]
         settings = dict(
             blog_title=u"分词校对",
@@ -263,6 +264,8 @@ class TextListHandler(BaseHandler):
             num = 20
         if not page:
             page = 0
+        else:
+            page = int(page)
         cursor = self.db.text.find(
             query,
             {
@@ -288,7 +291,7 @@ class TextListHandler(BaseHandler):
             #raw["creator"] = self.get_current_user()    #str(raw["creator"])
             raws.append(raw)
         # print("raws: ", raws)
-        self.render("textlist.html", raws=raws)
+        self.render("textlist.html", raws=raws, page=page)
 
 
 class AboutHandler(BaseHandler):
@@ -410,10 +413,14 @@ class WordSegHandler(BaseHandler):
     def post(self, id):
         # id = self.get_argument("_id", None)
         data = self.get_argument("data", None)
+        proofreaded = self.get_argument("proofreaded_ok", None)
         # json to dict
         if not data:
             return
-        wordlst = json.loads(data)
+        try:
+            wordlst = json.loads(data)
+        except Exception as e:
+            return
 
         # find document from MongoDB by id, verify wether data string equals to raw or cut
         text = self.db.text.find_one(
@@ -446,16 +453,19 @@ class WordSegHandler(BaseHandler):
             return
 
         # update document in MongoDB by id
+        values = {
+            "$set":
+                {
+                    "proofreaded": wordlst,
+                }
+        }
+        if proofreaded:
+            values["$set"]["status"] = 3
         rvalue = self.db.text.update_one(
             {
                 "_id": ObjectId(id)
             },
-            {
-                "$set":
-                    {
-                        "proofreaded": wordlst
-                    }
-            }
+            values
         )
         if rvalue:
             self.render(
@@ -473,6 +483,64 @@ class WordSegHandler(BaseHandler):
                 raw="",
                 error="更新数据失败！"
             )
+
+
+
+
+class ExportHandler(BaseHandler):
+    """
+    select data and export
+    """
+    @tornado.web.authenticated
+    def get(self):
+        self.render("export.html")
+
+    @tornado.web.authenticated
+    def post(self):
+        batch_list = self.get_argument("batch")
+        if not batch_list:
+            self.render("export.html", error=1)
+            return
+
+        query = {"status": 3}
+        if batch_list != "ALL":
+            try:
+                batch = [x.strip() for x in batch_list.split(",")]
+                query["batch"] = {"$in": batch}
+            except Exception as e:
+                self.render("export.html", error="参数有误")
+                return
+        filter = {"_id":0, "proofreaded": 1}
+        cursor = self.db.text.find( query, filter )
+        lst = []
+
+        for ele in cursor:
+            for word in ele["proofreaded"]:
+                length = len(word)
+                if length == 1:
+                    lst.append(word[0] + '/s')
+                else:
+                    lst.append(word[0] + '/b')
+                    for c in word[1:-1]:
+                        lst.append(c + '/m')
+                    lst.append(word[-1] + '/e')
+            lst.append('\n/s')
+        train = ' '.join(lst)
+        filenm = 'train_{0}'.format(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+        self.set_header('Content-Type', 'application/octet-stream')
+        self.set_header('Content-Disposition', 'attachment; filename=' + filenm)
+        buf_size = 4096
+        count = 0
+        while True:
+            data = train[count:count+buf_size]
+            self.write(data)
+            if count + buf_size > len(train):
+                break
+            count += buf_size
+        self.finish()
+
+
+
 
 def main():
     tornado.options.parse_command_line()
